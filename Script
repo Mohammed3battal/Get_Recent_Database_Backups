@@ -1,0 +1,30 @@
+SELECT  
+    bs.database_name,
+    bs.backup_start_date,
+    bs.backup_finish_date,
+    bs.type AS BackupTypeCode,
+    CASE bs.type
+        WHEN 'D' THEN 'Full'
+        WHEN 'I' THEN 'Differential'
+        WHEN 'L' THEN 'Transaction Log'
+        ELSE 'Other'
+    END AS BackupType,
+    bs.backup_size / 1024 / 1024 AS BackupSizeMB,
+    bmf.physical_device_name AS BackupLocation,
+    bs.server_name,
+    bs.recovery_model
+FROM 
+    msdb.dbo.backupset bs
+JOIN 
+    msdb.dbo.backupmediafamily bmf ON bs.media_set_id = bmf.media_set_id
+
+
+where
+--bs.database_name = 'YourDatabase'
+--AND
+--bs.type = 'd'
+--AND    
+bs.backup_finish_date >= '2025-04-10'
+
+ORDER BY 
+    BackupSizeMB desc;
